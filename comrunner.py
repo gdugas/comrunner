@@ -9,13 +9,19 @@ class CommandRunner(object):
     
     description = ""
     args = []
-    subcommands = {}
     
+    def __init__(self):
+        self.subcommands = {}
+    
+    def add_subcommand(self, name, cls):
+        if not issubclass(cls, CommandRunner):
+            m = "not a CommandRunner subclass"
+            raise Exception(m)
+        self.subcommands[name] = cls
     
     def create_parser(self):
         import argparse
         return argparse.ArgumentParser(description = self.description)
-    
     
     def init_parser(self, parser=None):
         if not parser:
