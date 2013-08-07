@@ -1,4 +1,7 @@
 
+__version__ = '0.1a'
+
+
 class Argument(object):
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -9,15 +12,17 @@ class CommandRunner(object):
     
     description = ""
     args = []
+    subcommands = {}
     
     def __init__(self):
-        self.subcommands = {}
+        subcommands = getattr(self.__class__, 'subcommands', {})
+        self._subcommands = subcommands.copy()
     
     def add_subcommand(self, name, cls):
         if not issubclass(cls, CommandRunner):
             m = "not a CommandRunner subclass"
             raise Exception(m)
-        self.subcommands[name] = cls
+        self._subcommands[name] = cls
     
     def create_parser(self):
         import argparse
@@ -33,15 +38,15 @@ class CommandRunner(object):
             parser.add_argument(*arg.args, **arg.kwargs)
         
         
-        if len(self.subcommands) == 0:
+        if len(self._subcommands) == 0:
             parser.set_defaults(func=self.execute)
             return parser
         
         subparsers = parser.add_subparsers()
-        for k in self.subcommands:
-            if not issubclass(self.subcommands[k], CommandRunner):
+        for k in self._subcommands:
+            if not issubclass(self._subcommands[k], CommandRunner):
                 raise Exception("Not a CommandRunner subclass")
-            cmd = self.subcommands[k]()
+            cmd = self._subcommands[k]()
             
             subparser = subparsers.add_parser(k, help=cmd.description)
             cmd.init_parser(subparser)
