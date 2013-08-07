@@ -11,6 +11,7 @@ setup(name='ComRunner',
       author_email='dugas.guillaume@gmail.com',
       download_url='https://github.com/gdugas/comrunner/archive/0.1.zip',
       py_modules=['comrunner'],
+      url='https://github.com/gdugas/comrunner/archive/0.1.zip',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
