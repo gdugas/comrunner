@@ -1,7 +1,7 @@
 #!/usr/bin/env python
-
 from distutils.core import setup
 from comrunner import __version__
+
 
 setup(name='ComRunner',
       version=__version__,
@@ -9,12 +9,13 @@ setup(name='ComRunner',
       long_description='Commandline runner utility',
       author='Guillaume Dugas',
       author_email='dugas.guillaume@gmail.com',
-      download_url='https://github.com/gdugas/comrunner/archive/0.1.zip',
+      url='https://github.com/gdugas/comrunner',
       py_modules=['comrunner'],
-      url='https://github.com/gdugas/comrunner/archive/0.1.zip',
+      license = 'BSD License',
       classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
+        'License :: OSI Approved :: BSD License',
         'Intended Audience :: Developers',
         'Intended Audience :: System Administrators'
       ]
