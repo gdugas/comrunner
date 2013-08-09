@@ -57,16 +57,18 @@ class CommandRunner(object):
     def parse_args(self, args=None):
         parser = self.init_parser()
         if args == None:
-            return parser.parse_args()
+            return parser, parser.parse_args()
         else:
-            return parser.parse_args(args)
+            return parser, parser.parse_args(args)
     
     
     def run(self, args=None):
-        args = self.parse_args(args)
-        args.func(args)
+        parser, args = self.parse_args(args)
+        try:
+            args.func(parser, args)
+        except AttributeError:
+            parser.error(parser.print_usage())
     
-    
-    def execute(self, args):
-        m = "Undefined abstract method 'handle()'"
+    def execute(self, parser, args):
+        m = "Undefined abstract method 'execute()'"
         raise NotImplementedError(m)
