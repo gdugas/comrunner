@@ -18,11 +18,17 @@ class CommandRunner(object):
         subcommands = getattr(self.__class__, 'subcommands', {})
         self._subcommands = subcommands.copy()
     
+    
     def add_subcommand(self, name, cls):
         if not issubclass(cls, CommandRunner):
             m = "not a CommandRunner subclass"
             raise Exception(m)
+        
         self._subcommands[name] = cls
+    
+    def init_subcommand(self, name, cls):
+        return cls()
+    
     
     def create_parser(self):
         import argparse
@@ -37,7 +43,6 @@ class CommandRunner(object):
                 raise Exception("Not an Argument instance")
             parser.add_argument(*arg.args, **arg.kwargs)
         
-        
         if len(self._subcommands) == 0:
             parser.set_defaults(func=self.execute)
             return parser
@@ -46,7 +51,7 @@ class CommandRunner(object):
         for k in self._subcommands:
             if not issubclass(self._subcommands[k], CommandRunner):
                 raise Exception("Not a CommandRunner subclass")
-            cmd = self._subcommands[k]()
+            cmd = self.init_subcommand(k, self._subcommands[k])
             
             subparser = subparsers.add_parser(k, help=cmd.description)
             cmd.init_parser(subparser)
@@ -67,7 +72,7 @@ class CommandRunner(object):
         try:
             args.func(parser, args)
         except AttributeError:
-            parser.error(parser.print_usage())
+            parser.error("missing command. Launch with -h option for more information")
     
     def execute(self, parser, args):
         m = "Undefined abstract method 'execute()'"
