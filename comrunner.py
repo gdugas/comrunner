@@ -1,3 +1,4 @@
+__version__ = '0.1b'
 
 class Argument(object):
     def __init__(self, *args, **kwargs):
