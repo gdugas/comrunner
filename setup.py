@@ -13,7 +13,7 @@ setup(name='ComRunner',
       py_modules=['comrunner'],
       license = 'BSD License',
       classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 4 - Beta',
         'Environment :: Console',
         'License :: OSI Approved :: BSD License',
         'Intended Audience :: Developers',
