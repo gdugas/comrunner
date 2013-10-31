@@ -1,7 +1,4 @@
 
-__version__ = '0.1a'
-
-
 class Argument(object):
     def __init__(self, *args, **kwargs):
         self.args = args
@@ -14,10 +11,10 @@ class CommandRunner(object):
     args = []
     subcommands = {}
     
-    def __init__(self):
+    def __init__(self, parent=None):
         subcommands = getattr(self.__class__, 'subcommands', {})
         self._subcommands = subcommands.copy()
-    
+        self.parent = parent
     
     def add_subcommand(self, name, cls):
         if not issubclass(cls, CommandRunner):
@@ -27,8 +24,7 @@ class CommandRunner(object):
         self._subcommands[name] = cls
     
     def init_subcommand(self, name, cls):
-        return cls()
-    
+        return cls(parent=self)
     
     def create_parser(self):
         import argparse
@@ -45,10 +41,11 @@ class CommandRunner(object):
         
         if len(self._subcommands) == 0:
             parser.set_defaults(func=self.execute)
+            parser.set_defaults(pre_exec_func=self._pre_exec)
             return parser
         
         subparsers = parser.add_subparsers()
-        for k in self._subcommands:
+        for k in sorted(self._subcommands):
             if not issubclass(self._subcommands[k], CommandRunner):
                 raise Exception("Not a CommandRunner subclass")
             cmd = self.init_subcommand(k, self._subcommands[k])
@@ -70,10 +67,20 @@ class CommandRunner(object):
     def run(self, args=None):
         parser, args = self.parse_args(args)
         try:
+            args.pre_exec_func(parser, args)
             args.func(parser, args)
         except AttributeError:
             parser.error("missing command. Launch with -h option for more information")
     
+    def _pre_exec(self, parser, args):
+        if self.parent:
+            self.parent._pre_exec(parser, args)
+        self.pre_exec(parser, args)
+    
+    def pre_exec(self, parser, args):
+        pass
+    
     def execute(self, parser, args):
         m = "Undefined abstract method 'execute()'"
         raise NotImplementedError(m)
+
